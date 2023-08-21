@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .input-group input[type="text"] {
+      flex-grow: 1;
+      padding: 6px;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .input-group button {
+      padding: 6px 10px;
+      margin-left: 8px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .todo-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .todo-item span {
+      margin-right: 10px;
+    }
+
+    .todo-item input[type="text"] {
+      flex-grow: 1;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .todo-item button {
+      padding: 4px 8px;
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Todo List</h2>
+    <div class="input-group">
+      <input id="newTodoInput" type="text" placeholder="请输入待办事项">
+      <button id="addTodoButton">添加</button>
+    </div>
+
+    <ul id="todoList" class="todo-list"></ul>
+  </div>
+
+  <script>
+    // 获取元素
+    const newTodoInput = document.getElementById('newTodoInput');
+    const addTodoButton = document.getElementById('addTodoButton');
+    const todoList = document.getElementById('todoList');
+
+    // 待办事项数组
+    let todos = [];
+
+    // 添加待办事项
+    addTodoButton.addEventListener('click', function() {
+      const newTodo = newTodoInput.value.trim();
+      if (newTodo !== '') {
+        todos.push({
+          name: newTodo,
+          editing: false
+        });
+        renderTodos();
+        newTodoInput.value = '';
+      }
+    });
+
+    // 渲染待办事项列表
+    function renderTodos() {
+      todoList.innerHTML = '';
+      todos.forEach(function(todo, index) {
+        const li = document.createElement('li');
+        li.className = 'todo-item';
+
+        const span = document.createElement('span');
+        span.textContent = todo.name;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.style.display = 'none';
+        input.value = todo.name;
+
+        const editButton = document.createElement('button');
+        editButton.textContent = '编辑';
+        editButton.addEventListener('click', function() {
+          startEditing(index);
+        });
+
+        const saveButton = document.createElement('button');
+        saveButton.textContent = '保存';
+        saveButton.style.display = 'none';
+        saveButton.addEventListener('click', function() {
+          saveChanges(index);
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '删除';
+        deleteButton.addEventListener('click', function() {
+          deleteTodo(index);
+        });
+
+        li.appendChild(span);
+        li.appendChild(input);
+        li.appendChild(editButton);
+        li.appendChild(saveButton);
+        li.appendChild(deleteButton);
+
+        if (todo.editing) {
+          span.style.display = 'none';
+          input.style.display = 'inline-block';
+          editButton.style.display = 'none';
+          saveButton.style.display = 'inline-block';
+        }
+
+        todoList.appendChild(li);
+      });
+    }
+
+    // 启动编辑
+    function startEditing(index) {
+      todos[index].editing = true;
+      renderTodos();
+    }
+
+    // 保存修改
+    function saveChanges(index) {
+      todos[index].name = todoList.children[index].querySelector('input').value.trim();
+      todos[index].editing = false;
+      renderTodos();
+    }
+
+    // 删除待办事项
+    function deleteTodo(index) {
+      todos.splice(index, 1);
+      renderTodos();
+    }
+  </script>
+</body>
+</html>
